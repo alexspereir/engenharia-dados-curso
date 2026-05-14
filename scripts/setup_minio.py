@@ -8,7 +8,7 @@ Cria os buckets correspondentes às camadas da arquitetura Medalion
 import boto3
 from botocore.exceptions import ClientError
 
-MINIO_ENDPOINT = "http//:localhost:9000"
+MINIO_ENDPOINT = "http://localhost:9000"
 MINIO_ACCESS_KEY = "minioadmin"
 MINIO_SECRET_KEY = "minioadmin123"
 
@@ -40,7 +40,7 @@ def create_s3_client():
 def create_bucket(client, bucket_name: str) -> bool:
     """Cria um bucket no MinIO - Retorna True se criado com sucesso, false se já existia"""
     try:
-        client.create_bucket(Bucket = "bucket_name")
+        client.create_bucket(Bucket = bucket_name)
         return True
     except ClientError as e:
         error_code = e.response["Error"]["Code"]
@@ -61,7 +61,8 @@ def main():
     client = create_s3_client()
     for bucket in BUCKETS:
         name = bucket["name"]
-        created = "\u2705 Criado" if created else "\u26A0 Já existia"
+        created = create_bucket(client, name)
+        status = "\u2705 Criado" if created else "\u26A0 Já existia"
         print(f"\n [{name.upper()} {status}]")
 
     print(f"Descrição: {bucket['description']}")
